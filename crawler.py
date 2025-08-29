@@ -10,7 +10,9 @@ import settings # import settings file with configurations
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=settings.LOGLEVEL)
 
+# list of all modules in module directory
 all_list = list()
+# list with all active modules
 active_list = list()
 json_list = list()
 
@@ -86,8 +88,9 @@ def get_applications():
 
 def get_application(module):
     """"
-    Get application by crawling all modules.
-    Whitelist and blacklist checking is not active. Checking of black- and c´whitelist is in function get_applications() done.
+    Get informations of an application by crawling the modules given as parameter.
+    Whitelist and blacklist checking is not active.
+    Checking of black- and whitelist is in function get_applications() done.
     This function is called by get_applications() and the rest service for crawling a single module.
     """
     application_result: str = ""
@@ -111,7 +114,7 @@ def get_application(module):
 
 def check_module_exists(module_name):
     """
-    Function to check if a module is in the modules list.
+    Function to check if a module is in the modules list, so it exists as python file in the module directory.
     """
     LOGGER.debug("List of found modules: %s",all_list)
     LOGGER.debug("List of activated modules: %s",active_list)

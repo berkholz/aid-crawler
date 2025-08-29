@@ -14,6 +14,7 @@ logging.basicConfig(level=settings.LOGLEVEL)
 
 app = Flask(__name__)
 
+# users that can access the webservice
 USERS = {
     "admin": "admin"
 }
@@ -50,23 +51,38 @@ def require_auth(f):
 @app.route('/modules/list', methods=['GET'])
 # @require_auth
 def get_modules():
+    """
+    List all modules that can be activated.
+    """
     return jsonify(crawler.all_list)
 
 # Route: GET /modules -> get all activated modules of crawler
 @app.route('/modules/list-activated', methods=['GET'])
 def get_ativated_modules():
+    """
+    List all modules that are activated.
+    """
     return jsonify(crawler.active_list)
 
 @app.route('/apps/list', methods=['GET'])
 def list_apps():
+    """
+    List all crawled informations of all applications as JSON.
+    """
     return jsonify("state","not implemented yet")
 
 @app.route('/apps/list/<string:module>', methods=['GET'])
 def list_app(module):
+    """
+    List all crawled informations of a single applications as JSON that was given as parameter.
+    """
     return jsonify("state","not implemented yet")
 
 @app.route('/settings', methods=['GET'])
 def list_settings():
+    """
+    List all settings of aid-cralwer that are active.
+    """
     setting_list = dict()
     setting_list["CRAWLER_MODULE_PATH"] = CWD_DIR + "/" + settings.CRAWLER_MODULE_PATH
     setting_list["CRAWLER_MODULE_BLACKLIST"] = settings.CRAWLER_MODULE_BLACKLIST
@@ -81,18 +97,30 @@ def list_settings():
 
 @app.route('/apps/export', methods=['GET'])
 def export_apps():
+    """
+    Export all crawled informations of all application to file. File is set in settings.CRAWLER_MODULE_EXPORT_DIRECTORY.
+    """
     return jsonify("not implemented yet", "Export will be saved to: " + settings.CRAWLER_SERVICE_EXPORT_DIRECTORY)
 
 @app.route('/apps/export/<string:module>', methods=['GET'])
-def export_app():
+def export_app(module):
+    """
+    Export all crawled informations of a single application given by parameter to file. File is set in settings.CRAWLER_MODULE_EXPORT_FILE.
+    """
     return jsonify("not implemented yet")
 
 @app.route('/crawl', methods=['GET'])
 def crawl_modules():
+    """
+    Crawl all modules that are activated.
+    """
     return crawler.get_applications()
 
 @app.route('/crawl/<string:module>', methods=['GET'])
 def crawl_module(module):
+    """
+    Crawl single module regardless of its activated or not.
+    """
     module_result = list()
     LOGGER.debug("Crawling module '{}'".format(module))
     if check_module_exists(module):
@@ -106,6 +134,9 @@ def crawl_module(module):
 
 @app.errorhandler(400)
 def bad_request(error):
+    """
+    400 error handler.
+    """
     return jsonify({"error": "Bad request."}), 400
 
 ################################### MAIN
