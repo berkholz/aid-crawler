@@ -5,6 +5,7 @@ import glob #import global
 import importlib
 import logging #import for logging
 import settings # import settings file with configurations
+import database
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
@@ -52,7 +53,10 @@ def init():
     """
     Function to initialize the crawler.
     """
+    LOGGER.debug("Initializing crawler.")
     all_list = get_modules_from_path()
+    LOGGER.debug("Initializing database.")
+    database.init_db()
 
 def get_modules_from_path():
     """
