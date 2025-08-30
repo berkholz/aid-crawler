@@ -9,4 +9,4 @@ The following sequence diagram shows the process of the aid-crawlers components:
 
 [Link to diagram source.](./doc/crawler_sequence.puml)
 
-
+The REST API can be seen under [/apidocs/](/apidocs/).

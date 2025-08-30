@@ -4,6 +4,7 @@ import crawler
 import logging  # import lib for LOGGING
 import settings  # import global settings
 from flask import Flask, jsonify, request, abort  # import for rest service
+from flasgger import Swagger, swag_from
 
 from crawler import check_module_exists, get_application
 from settings import CWD_DIR
@@ -19,8 +20,23 @@ USERS = {
     "admin": "admin"
 }
 
-################################### FUNCTIONS
+###
+### Swagger configuration
+###
+SWAGGER_TEMPLATE = {
+    "swagger": "2.0",
+    "info": {
+        "title": "Aid Crawler Service API",
+        "description": "RESTful API with JWT authentication and role-based access",
+        "version": "0.0.1"
+    },
+    "basePath": "/",
+    "schemes": ["http", "https"],
+}
+swagger = Swagger(app, template=SWAGGER_TEMPLATE)
 
+
+################################### FUNCTIONS
 def check_basic_auth(auth_header):
     if not auth_header:
         return False
@@ -50,6 +66,12 @@ def require_auth(f):
 # Route: GET /modules -> get all modules in path of crawler
 @app.route('/modules/list', methods=['GET'])
 # @require_auth
+@swag_from({
+    "tags": ["Modules"],
+    "responses": {
+        "200": {"description": "Ok"},
+    }
+})
 def get_modules():
     """
     List all modules that can be activated.
@@ -58,6 +80,12 @@ def get_modules():
 
 # Route: GET /modules -> get all activated modules of crawler
 @app.route('/modules/list-activated', methods=['GET'])
+@swag_from({
+    "tags": ["Modules"],
+    "responses": {
+        "200": {"description": "Ok"},
+    }
+})
 def get_ativated_modules():
     """
     List all modules that are activated.
@@ -65,6 +93,12 @@ def get_ativated_modules():
     return jsonify(crawler.active_list)
 
 @app.route('/apps/list', methods=['GET'])
+@swag_from({
+    "tags": ["Applications"],
+    "responses": {
+        "200": {"description": "Ok"},
+    }
+})
 def list_apps():
     """
     List all crawled informations of all applications as JSON.
@@ -72,6 +106,22 @@ def list_apps():
     return jsonify("state","not implemented yet")
 
 @app.route('/apps/list/<string:module>', methods=['GET'])
+@swag_from({
+    "tags": ["Applications"],
+    "parameters": [
+        {"name": "module", "in": "path", "required": True, "type": "string"}
+    ],
+    "responses": {
+        "200": {"description": "Token issued", "schema": {"type": "object", "properties": {
+            "token": {"type": "string"},
+            "expires_at": {"type": "integer"}
+        }}},
+        "200": {"description": "Application found", "schema": {"type": "object", "properties": {}}},
+        "400": {"description": "Bad Request"},
+        "401": {"description": "Unauthorized"},
+        "404": {"description": "Not Found"}
+    }
+})
 def list_app(module):
     """
     List all crawled informations of a single applications as JSON that was given as parameter.
@@ -79,6 +129,12 @@ def list_app(module):
     return jsonify("state","not implemented yet")
 
 @app.route('/settings', methods=['GET'])
+@swag_from({
+    "tags": ["Settings"],
+    "responses": {
+        "200": {"description": "Ok"},
+    }
+})
 def list_settings():
     """
     List all settings of aid-cralwer that are active.
@@ -96,6 +152,12 @@ def list_settings():
     return jsonify(setting_list)
 
 @app.route('/apps/export', methods=['GET'])
+@swag_from({
+    "tags": ["Applications"],
+    "responses": {
+        "200": {"description": "Ok"},
+    }
+})
 def export_apps():
     """
     Export all crawled informations of all application to file. File is set in settings.CRAWLER_MODULE_EXPORT_DIRECTORY.
@@ -103,6 +165,17 @@ def export_apps():
     return jsonify("not implemented yet", "Export will be saved to: " + settings.CRAWLER_SERVICE_EXPORT_DIRECTORY)
 
 @app.route('/apps/export/<string:module>', methods=['GET'])
+@swag_from({
+    "tags": ["Applications"],
+    "parameters": [
+        {"name": "module", "in": "path", "required": True, "type": "string"}
+    ],
+    "responses": {
+        "200": {"description": "Ok"},
+        "401": {"description": "Unauthorized"},
+        "404": {"description": "Not Found"},
+    }
+})
 def export_app(module):
     """
     Export all crawled informations of a single application given by parameter to file. File is set in settings.CRAWLER_MODULE_EXPORT_FILE.
@@ -110,6 +183,14 @@ def export_app(module):
     return jsonify("not implemented yet")
 
 @app.route('/crawl', methods=['GET'])
+@swag_from({
+    "tags": ["Crawling"],
+    "responses": {
+        "200": {"description": "Ok"},
+        "401": {"description": "Unauthorized"},
+        "404": {"description": "Not Found"},
+    }
+})
 def crawl_modules():
     """
     Crawl all modules that are activated.
@@ -117,6 +198,17 @@ def crawl_modules():
     return crawler.get_applications()
 
 @app.route('/crawl/<string:module>', methods=['GET'])
+@swag_from({
+    "tags": ["Crawling"],
+    "parameters": [
+        {"name": "module", "in": "path", "required": True, "type": "string"}
+    ],
+    "responses": {
+        "200": {"description": "Ok"},
+        "401": {"description": "Unauthorized"},
+        "404": {"description": "Not Found"},
+    }
+})
 def crawl_module(module):
     """
     Crawl single module regardless of its activated or not.
