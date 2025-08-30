@@ -234,6 +234,8 @@ def bad_request(error):
 ################################### MAIN
 if __name__ == '__main__':
     LOGGER.info("Starting crawler on port %s...",settings.CRAWLER_SERVICE_PORT)
+    LOGGER.info("Initializing crawler with settings...")
+    settings.print_settings()
     LOGGER.info("Initializing crawler with modules...")
     crawler.init()
     LOGGER.info("Crawler found the following modules: %s", crawler.all_list)
