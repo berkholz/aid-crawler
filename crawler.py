@@ -87,7 +87,6 @@ def get_applications():
     for mymodule in active_list:
         LOGGER.info("Checking %s for downloads.", mymodule)
         json_list.append(get_application(mymodule))
-
     return json_list
 
 def get_application(module):
@@ -99,15 +98,8 @@ def get_application(module):
     """
     application_result: str = ""
     # import module
-    if __name__ == '__main__':
-        # we call the crawler.py directly, so we import without the __package__
-        LOGGER.debug("importing module %s", module)
-        mod = importlib.import_module(settings.CRAWLER_MODULE_PATH + "." + module)
-    else:
-        # we call the crawler.py from elsewhere, so we import with the __package__
-        LOGGER.debug("importing module %s", module)
-        #mod = importlib.import_module(__package__ + "." + settings.MODULE_PATH + "." + module)
-        mod = importlib.import_module(settings.CRAWLER_MODULE_PATH + "." + module)
+    LOGGER.debug("importing module %s", module)
+    mod = importlib.import_module(settings.CRAWLER_MODULE_PATH + "." + module)
     # run modules function run()
     try:
         LOGGER.debug("executing module %s", mod)
@@ -131,4 +123,7 @@ def check_module_exists(module_name):
         return False
 
 if __name__ == "__main__":
-    print(get_applications())
+    #print(get_applications())
+    all_list = get_modules_from_path()
+    database.init_db()
+    print(get_application("7zip"))
