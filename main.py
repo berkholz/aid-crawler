@@ -223,7 +223,30 @@ def crawl_module(module):
     else:
         LOGGER.debug("Module '{}' does not exist".format(module))
         abort(404, "Module '{}' does not exist".format(module))
-    return jsonify(module_result)
+    return module_result
+
+@app.route('/settings', methods=['GET'])
+@swag_from({
+    "tags": ["Settings"],
+    "responses": {
+        "200": {"description": "Ok"},
+    }
+})
+def list_settings():
+    """
+    List all settings of aid-cralwer that are active.
+    """
+    setting_list = dict()
+    setting_list["CRAWLER_MODULE_PATH"] = CWD_DIR + "/" + settings.CRAWLER_MODULE_PATH
+    setting_list["CRAWLER_MODULE_BLACKLIST"] = settings.CRAWLER_MODULE_BLACKLIST
+    setting_list["CRAWLER_MODULE_WHITELIST"] = settings.CRAWLER_MODULE_WHITELIST
+    setting_list["CRAWLER_SERVICE_LISTEN_ADDRESS"] = settings.CRAWLER_SERVICE_LISTEN_ADDRESS
+    setting_list["CRAWLER_SERVICE_PORT"] = settings.CRAWLER_SERVICE_PORT
+    setting_list["CRAWLER_SERVICE_EXPORT_DIRECTORY"] = settings.CRAWLER_SERVICE_EXPORT_DIRECTORY
+    setting_list["CRAWLER_MODULE_REQUEST_TIMEOUT"] = settings.CRAWLER_MODULE_REQUEST_TIMEOUT
+    setting_list["CWD_DIR"] = settings.CWD_DIR
+    setting_list["LOGLEVEL"] = settings.LOGLEVEL
+    return jsonify(setting_list)
 
 @app.errorhandler(400)
 def bad_request(error):
