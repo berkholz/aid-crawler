@@ -2,6 +2,7 @@ import base64
 from sys import setprofile
 import crawler
 import logging  # import lib for LOGGING
+import database # import for saving data to sqlite db
 import settings  # import global settings
 from flask import Flask, jsonify, request, abort  # import for rest service
 from flasgger import Swagger, swag_from
