@@ -22,6 +22,7 @@ CRAWLER_SERVICE_EXPORT_DIRECTORY=os.path.join(CWD_DIR, "exports")
 ###
 CRAWLER_DATABASE_NAME="aid-crawler.sqlite"
 CRAWLER_DATABASE_FILE=os.path.join(CWD_DIR, CRAWLER_DATABASE_NAME)
+CRAWLER_DATABASE_TABLE="software"
 
 ###
 ### black- and whitelisting
