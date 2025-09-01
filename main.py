@@ -196,7 +196,13 @@ def crawl_modules():
     """
     Crawl all modules that are activated.
     """
-    return crawler.get_applications()
+    for mymodule in crawler.active_list:
+        LOGGER.info("Checking %s for downloads.", mymodule)
+        module_result = crawl_module(mymodule)
+        #LOGGER.info("RESULT: " + module_result)
+        crawler.json_list.append(module_result)
+        #LOGGER.info("json_list: " + crawler.json_list)
+    return jsonify(crawler.json_list)
 
 @app.route('/crawl/<string:module>', methods=['GET'])
 @swag_from({
