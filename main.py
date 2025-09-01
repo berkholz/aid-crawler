@@ -220,6 +220,9 @@ def crawl_module(module):
         LOGGER.debug("Module '{}' exists".format(module))
         module_result = get_application(module)
         LOGGER.debug("Module '{}' result: {}".format(module, module_result))
+        LOGGER.debug("Add Module '{}' to sqlite db.".format(module))
+        arr = [module_result]
+        database.append_software(arr)
     else:
         LOGGER.debug("Module '{}' does not exist".format(module))
         abort(404, "Module '{}' does not exist".format(module))
