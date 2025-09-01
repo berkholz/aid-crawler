@@ -78,6 +78,30 @@ def append_software(list_software_dict):
             connection.commit()
     connection.close()
 
+def get_software_all_names():
+    connection = sqlite3.connect(settings.CRAWLER_DATABASE_FILE)
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT DISTINCT app_name FROM " + settings.CRAWLER_DATABASE_TABLE )
+    entry = cursor.fetchall()
+    LOGGER.info("Fetched all software names: %s", entry)
+    return entry
+
+def get_software_latest(app_name):
+    """
+    Retrieve the latest software information of all applications.
+    """
+    global LOGGER
+    connection = sqlite3.connect(settings.CRAWLER_DATABASE_FILE)
+    cursor = connection.cursor()
+    # the order of selected fields is important, because the main.py creates it dictionary in this order of values
+    cursor.execute(
+        "SELECT "
+        "   app_name, app_version,app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found"
+        " FROM " + settings.CRAWLER_DATABASE_TABLE + " WHERE app_name=?", (app_name))
+    entry = cursor.fetchall()
+    return entry
+
 if __name__ == "__main__":
     sqlite_db_file = settings.CRAWLER_DATABASE_FILE
     init_db()
