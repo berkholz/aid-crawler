@@ -31,7 +31,7 @@ CRAWLER_DATABASE_TABLE="software"
 CRAWLER_MODULE_WHITELIST = list()
 # to define a whitelits for modules uncomment the line below and add your modules as list.
 # Module name has to be like the file name.
-#CRAWLER_MODULE_WHITELIST = ['7zip']
+#CRAWLER_MODULE_WHITELIST = ['7zip','notepadpp','gimp']
 
 # Here you can define a black list of modules that will not be crawled.
 # It overwrites the white list.
