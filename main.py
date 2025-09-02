@@ -140,6 +140,7 @@ def list_app(app, mode="single"):
     # get all informations from db about the single "app"
     application = database.get_software_latest(param)
     LOGGER.debug("Application: %s", application)
+
     # working list for the app
     a1 = list()
     # working dict for the app, here we save only the basic informations
