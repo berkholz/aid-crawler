@@ -1,14 +1,15 @@
 import base64
 from sys import setprofile
-import crawler
+import crawler # import for using crawler functions
 import logging  # import lib for LOGGING
 import database # import for saving data to sqlite db
 import settings  # import global settings
 from flask import Flask, jsonify, request, abort  # import for rest service
-from flasgger import Swagger, swag_from
-
+from flasgger import Swagger, swag_from # import for generating swagger UI for REST API documentation
+import json, codecs # import for exporting JSON to file with codec
 from crawler import check_module_exists, get_application
-from settings import CWD_DIR
+from settings import CWD_DIR # import global settings
+import os # import for creating export directory
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
@@ -185,7 +186,12 @@ def export_apps():
     """
     Export all crawled informations of all application to file. File is set in settings.CRAWLER_MODULE_EXPORT_DIRECTORY.
     """
-    return jsonify("not implemented yet", "Export will be saved to: " + settings.CRAWLER_SERVICE_EXPORT_DIRECTORY)
+    export_directory = settings.CRAWLER_SERVICE_EXPORT_DIRECTORY
+    export_file = settings.CRAWLER_SERVICE_EXPORT_FILE
+    if not check_export_directory(export_directory):
+        abort(403, f"Error while creating export directory: {export_directory}")
+    write_data(list_apps(), export_directory + "/" + export_file)
+    return jsonify("Export saved to: " + export_directory + "/" + export_file)
 
 @app.route('/apps/export/<string:module>', methods=['GET'])
 @swag_from({
@@ -203,7 +209,38 @@ def export_app(module):
     """
     Export all crawled informations of a single application given by parameter to file. File is set in settings.CRAWLER_MODULE_EXPORT_FILE.
     """
-    return jsonify("not implemented yet")
+    export_directory = settings.CRAWLER_SERVICE_EXPORT_DIRECTORY
+    export_file = settings.CRAWLER_SERVICE_EXPORT_FILE
+    if not check_export_directory(export_directory):
+        abort(404,f"Error while creating export directory: {export_directory}")
+    write_data(list_app(module), export_directory + "/" + export_file)
+    return jsonify("Export saved to: " + export_directory + "/" + export_file)
+
+def check_export_directory(dir=settings.CRAWLER_SERVICE_EXPORT_DIRECTORY):
+    """
+    Check if export directory exists, if not create it
+    """
+    try:
+        os.mkdir(dir)
+        LOGGER.info(f"Directory '{dir}' created successfully.")
+    except FileExistsError:
+        LOGGER.info(f"Directory '{dir}' already exists.")
+    except PermissionError:
+        LOGGER.error(f"Permission denied: Unable to create '{dir}'.")
+        return False
+    except Exception as e:
+        LOGGER.error(f"An error occurred: {e}")
+        return False
+    return True
+
+
+def write_data(data, filepath):
+    """
+    Write data to file.
+    """
+    with open(filepath, 'wb') as f:
+        json.dump(data, codecs.getwriter(settings.CRAWLER_SERVICE_EXPORT_ENCODING)(f), ensure_ascii=False)
+
 
 @app.route('/crawl', methods=['GET'])
 @swag_from({
