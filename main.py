@@ -166,6 +166,9 @@ def list_app(app, mode="single"):
         # here we append the architecture specific download information to dict.
         # after all every architecture given by module is appended
         sw["downloads"].append(sw_downloads)
+    if len(a1) == 0:
+        LOGGER.debug("No apps found")
+        abort(404, "Application not found")
     return a1[0]
 
 
