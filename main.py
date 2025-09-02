@@ -107,44 +107,15 @@ def list_apps():
     app_list = list()
     # get all names of software in database and iterate over single software
     for app in database.get_software_all_names():
-        # get all informations from db about the single "app"
-        application = database.get_software_latest(app)
-        LOGGER.debug("Application: %s", application)
-        # working list for the app
-        a1 = list()
-        # working dict for the app, here we save only the basic informations
-        sw = dict()
-        for app_entry in application:
-            # we only want to add once the software basic informations
-            if len(sw) == 0:
-                # the order of the app_entry fileds is important, see database.py -> def get_software_latest(module)
-                sw["app_name"] = app_entry[0]
-                sw["app_version"] = app_entry[1]
-                sw["full_name"] = app_entry[3]
-                sw["last_found"] = app_entry[10]
-                sw["downloads"] = list()
-                a1.append(sw)
-            # working dict for architecture specific download informations of the app
-            sw_downloads = dict()
-            sw_downloads["app_platform"] = app_entry[2]
-            sw_downloads["url_bin"] = app_entry[4]
-            sw_downloads["hash_type"] = app_entry[5]
-            sw_downloads["hash_res"] = app_entry[6]
-            sw_downloads["sig_type"] = app_entry[7]
-            sw_downloads["sig_res"] = app_entry[8]
-            sw_downloads["url_pub_key"] = app_entry[9]
-            # here we append the architecture specific download information to dict.
-            # after all every architecture given by module is appended
-            sw["downloads"].append(sw_downloads)
         # we don't want to add a list to a list, so we append a1[0]
-        app_list.append(a1[0])
-    return jsonify(app_list)
+        app_list.append(list_app(app, "multi"))
+    return app_list
 
-@app.route('/apps/list/<string:module>', methods=['GET'])
+@app.route('/apps/list/<string:app>', methods=['GET'])
 @swag_from({
     "tags": ["Applications"],
     "parameters": [
-        {"name": "module", "in": "path", "required": True, "type": "string"}
+        {"name": "app", "in": "path", "required": True, "type": "string"}
     ],
     "responses": {
         "200": {"description": "Token issued", "schema": {"type": "object", "properties": {
@@ -157,11 +128,45 @@ def list_apps():
         "404": {"description": "Not Found"}
     }
 })
-def list_app(module):
+def list_app(app, mode="single"):
     """
     List all crawled informations of a single applications as JSON that was given as parameter.
+    Parameter mode is needed because sqlite needs an list for listing single apps. otherwise only single string
     """
-    return jsonify("state","not implemented yet")
+    if mode == "single":
+        param = (app,)
+    else:
+        param = app
+    # get all informations from db about the single "app"
+    application = database.get_software_latest(param)
+    LOGGER.debug("Application: %s", application)
+    # working list for the app
+    a1 = list()
+    # working dict for the app, here we save only the basic informations
+    sw = dict()
+    for app_entry in application:
+        # we only want to add once the software basic informations
+        if len(sw) == 0:
+            # the order of the app_entry fileds is important, see database.py -> def get_software_latest(module)
+            sw["app_name"] = app_entry[0]
+            sw["app_version"] = app_entry[1]
+            sw["full_name"] = app_entry[3]
+            sw["last_found"] = app_entry[10]
+            sw["downloads"] = list()
+            a1.append(sw)
+        # working dict for architecture specific download informations of the app
+        sw_downloads = dict()
+        sw_downloads["app_platform"] = app_entry[2]
+        sw_downloads["url_bin"] = app_entry[4]
+        sw_downloads["hash_type"] = app_entry[5]
+        sw_downloads["hash_res"] = app_entry[6]
+        sw_downloads["sig_type"] = app_entry[7]
+        sw_downloads["sig_res"] = app_entry[8]
+        sw_downloads["url_pub_key"] = app_entry[9]
+        # here we append the architecture specific download information to dict.
+        # after all every architecture given by module is appended
+        sw["downloads"].append(sw_downloads)
+    return a1[0]
 
 
 
