@@ -231,6 +231,12 @@ def check_export_directory(dir=settings.CRAWLER_SERVICE_EXPORT_DIRECTORY):
         return False
     return True
 
+def change_file_extension(full_path_filename, new_extension):
+    """
+    Change file extension.
+    """
+    export_file_with_new_extension = Path(full_path_filename).with_suffix(new_extension)
+    return str(export_file_with_new_extension)
 
 def write_data(data, filepath):
     """
