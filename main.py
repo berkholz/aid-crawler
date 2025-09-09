@@ -1,4 +1,5 @@
 import base64
+import csv # import for writing/exporting csv files
 from sys import setprofile
 import crawler # import for using crawler functions
 import logging  # import lib for LOGGING
@@ -207,13 +208,63 @@ def export_app(module):
     Export all crawled informations of a single application given by parameter to file. File is set in settings.CRAWLER_MODULE_EXPORT_FILE.
     """
     export_directory = settings.CRAWLER_SERVICE_EXPORT_DIRECTORY
-    export_file = settings.CRAWLER_SERVICE_EXPORT_FILE
-    if not check_export_directory(export_directory):
-        abort(404,f"Error while creating export directory: {export_directory}")
-    write_data(list_app(module), export_directory + "/" + export_file)
-    return jsonify("Export saved to: " + export_directory + "/" + export_file)
+    LOGGER.debug("Export directory: %s", export_directory)
+    # change file extension
+    new_export_filename = change_file_extension(settings.CRAWLER_SERVICE_EXPORT_FILE, f".csv")
+    LOGGER.debug("New export filename: %s", new_export_filename)
+    # check if directory exists
+    dir_exists, error_message = check_export_directory(export_directory)
+    if not dir_exists:
+        abort(500,f"Error while creating export directory: {export_directory}: {error_message}")
+    with open(os.path.join(settings.CRAWLER_SERVICE_EXPORT_DIRECTORY,new_export_filename), mode="w", newline="", encoding=settings.CRAWLER_SERVICE_EXPORT_ENCODING) as csv_file:
+        writer = csv.writer(csv_file)
+        for row in database.get_software_all_latest_as_list():
+            writer.writerow(row)
+            LOGGER.debug(row)
+    #write_data(database.get_all_software_latest_as_list(), export_directory + "/" + new_export_filename)
+    return jsonify("Ok. Export saved to: " + export_directory + "/" + new_export_filename)
 
-def check_export_directory(dir=settings.CRAWLER_SERVICE_EXPORT_DIRECTORY):
+@app.route('/apps/export.csv/<string:module>', methods=['GET'])
+@swag_from({
+    "tags": ["Applications"],
+    "parameters": [
+        {"name": "module", "in": "path", "required": True, "type": "string"}
+    ],
+    "responses": {
+        "200": {"description": "Ok"},
+        "404": {"description": "Application Not Found"},
+        "500": {"description": "Internal Server Error"},
+    }
+})
+def export_app_as_csv(module):
+    """
+    Export an application as CSV.
+    """
+    export_directory = settings.CRAWLER_SERVICE_EXPORT_DIRECTORY
+    LOGGER.debug("Export directory: %s", export_directory)
+    # change file extension
+    new_export_filename = change_file_extension(settings.CRAWLER_SERVICE_EXPORT_FILE, f".{module}.csv")
+    LOGGER.debug("New export filename: %s", new_export_filename)
+    # check if directory exists
+    dir_exists, error_message = check_export_directory(export_directory)
+    if not dir_exists:
+        abort(500,f"Error while creating export directory: {export_directory}: {error_message}")
+    with open(os.path.join(settings.CRAWLER_SERVICE_EXPORT_DIRECTORY,new_export_filename), mode="w", newline="", encoding=settings.CRAWLER_SERVICE_EXPORT_ENCODING) as csv_file:
+        LOGGER.debug("Writing CSV file: %s", csv_file)
+        writer = csv.writer(csv_file)
+        # write table coloumn to file first
+        writer.writerow(database.get_table_header(settings.CRAWLER_DATABASE_TABLE))
+        LOGGER.debug(f"Writing table header: {settings.CRAWLER_DATABASE_TABLE}")
+
+        # call database.get_software_latest() with (module,) as param to avoid the error:
+        # >> sqlite3.ProgrammingError: Incorrect number of bindings supplied. The current statement uses 1, and there are 4 supplied.
+        # write data to file after header
+        for row in database.get_software_latest((module,)):
+            writer.writerow(row)
+            LOGGER.debug(row)
+    #write_data(database.get_all_software_latest_as_list(), export_directory + "/" + new_export_filename)
+    return jsonify("Ok. Export saved to: " + export_directory + "/" + new_export_filename)
+
 def check_export_directory(dir=settings.CRAWLER_SERVICE_EXPORT_DIRECTORY, error_message=None):
     """
     Check if export directory exists, if not create it.
