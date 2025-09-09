@@ -22,6 +22,7 @@ CRAWLER_SERVICE_PORT=5000
 CRAWLER_SERVICE_EXPORT_DIRECTORY=os.path.join(CWD_DIR, "exports")
 CRAWLER_SERVICE_EXPORT_FILE="aid-crawler_export.json"
 CRAWLER_SERVICE_EXPORT_ENCODING= "utf-8"
+CRAWLER_SERVICE_EXPORT_CSV_SEPARATOR = ";" # actually not used
 
 ###
 ### Settings for the crawler database

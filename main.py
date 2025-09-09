@@ -241,7 +241,7 @@ def export_apps_as_csv():
     if not dir_exists:
         abort(500,f"Error while creating export directory: {export_directory}: {error_message}")
     with open(os.path.join(settings.CRAWLER_SERVICE_EXPORT_DIRECTORY,new_export_filename), mode="w", newline="", encoding=settings.CRAWLER_SERVICE_EXPORT_ENCODING) as csv_file:
-        writer = csv.writer(csv_file)
+        writer = csv.writer(csv_file, delimiter=settings.CRAWLER_SERVICE_EXPORT_CSV_SEPARATOR)
         for row in database.get_software_all_latest_as_list():
             writer.writerow(row)
             LOGGER.debug(row)
