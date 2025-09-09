@@ -112,11 +112,11 @@ def list_apps():
         app_list.append(list_app(app, "multi"))
     return app_list
 
-@app.route('/apps/list/<string:app>', methods=['GET'])
+@app.route('/apps/list/<string:module>', methods=['GET'])
 @swag_from({
     "tags": ["Applications"],
     "parameters": [
-        {"name": "app", "in": "path", "required": True, "type": "string"}
+        {"name": "module", "in": "path", "required": True, "type": "string"}
     ],
     "responses": {
         "200": {"description": "Token issued", "schema": {"type": "object", "properties": {
@@ -129,15 +129,15 @@ def list_apps():
         "404": {"description": "Not Found"}
     }
 })
-def list_app(app, mode="single"):
+def list_app(module, mode="single"):
     """
     List all crawled informations of a single applications as JSON that was given as parameter.
     Parameter mode is needed because sqlite needs an list for listing single apps. otherwise only single string
     """
     if mode == "single":
-        param = (app,)
+        param = (module,)
     else:
-        param = app
+        param = module
     # get all informations from db about the single "app"
     application = database.get_software_latest(param)
     LOGGER.debug("Application: %s", application)
