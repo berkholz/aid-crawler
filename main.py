@@ -216,20 +216,25 @@ def export_app(module):
 
 def check_export_directory(dir=settings.CRAWLER_SERVICE_EXPORT_DIRECTORY):
     """
-    Check if export directory exists, if not create it
+    Check if export directory exists, if not create it.
+    Return TRUE if it exists or it coul dbe created successfully. Otherwise return FALSE.
     """
     try:
         os.mkdir(dir)
         LOGGER.info(f"Directory '{dir}' created successfully.")
+        error_message = None
     except FileExistsError:
-        LOGGER.info(f"Directory '{dir}' already exists.")
+        error_message = f"Directory '{dir}' already exists."
+        LOGGER.warning(f"{error_message}")
     except PermissionError:
-        LOGGER.error(f"Permission denied: Unable to create '{dir}'.")
-        return False
+        error_message = f"Permission denied: Unable to create '{dir}'."
+        LOGGER.error(f"{error_message}")
+        return False, error_message
     except Exception as e:
-        LOGGER.error(f"An error occurred: {e}")
-        return False
-    return True
+        error_message = f"An error occurred: {e}"
+        LOGGER.error(f"{error_message}")
+        return False, error_message
+    return True, error_message
 
 def change_file_extension(full_path_filename, new_extension):
     """
