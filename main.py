@@ -91,13 +91,7 @@ def list_apps():
         {"name": "module", "in": "path", "required": True, "type": "string"}
     ],
     "responses": {
-        "200": {"description": "Token issued", "schema": {"type": "object", "properties": {
-            "token": {"type": "string"},
-            "expires_at": {"type": "integer"}
-        }}},
         "200": {"description": "Application found", "schema": {"type": "object", "properties": {}}},
-        "400": {"description": "Bad Request"},
-        "401": {"description": "Unauthorized"},
         "404": {"description": "Not Found"}
     }
 })
