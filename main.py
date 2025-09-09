@@ -193,6 +193,30 @@ def export_apps():
     return jsonify("Export saved to: " + export_directory + "/" + export_file)
 
 @app.route('/apps/export/<string:module>', methods=['GET'])
+@swag_from({
+    "tags": ["Applications"],
+    "parameters": [
+        {"name": "module", "in": "path", "required": True, "type": "string"}
+    ],
+    "responses": {
+        "200": {"description": "Ok"},
+        "500": {"description": "Internal Server Error"},
+    }
+})
+def export_app(module):
+    """
+    Export all crawled informations of a single application given by parameter to file. File is set in settings.CRAWLER_MODULE_EXPORT_FILE.
+    """
+    export_directory = settings.CRAWLER_SERVICE_EXPORT_DIRECTORY
+    # change file extension
+    new_export_filename = change_file_extension(settings.CRAWLER_SERVICE_EXPORT_FILE, f".{module}.json")
+    # check if directory exists
+    dir_exists, error_message = check_export_directory(export_directory)
+    if not dir_exists:
+        abort(500,f"Error while creating export directory: {export_directory}: {error_message}")
+    write_data(list_app(module), export_directory + "/" + new_export_filename)
+    return jsonify("Ok. Export saved to: " + export_directory + "/" + new_export_filename)
+
 @app.route('/apps/export.csv', methods=['GET'])
 
 @swag_from({
