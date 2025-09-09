@@ -124,7 +124,7 @@ def get_software_latest(app_name):
     # the order of selected fields is important, because the main.py creates it dictionary in this order of values
     cursor.execute(
         "SELECT "
-        "app_name, app_version,app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found "
+        "app_name, app_version,app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, max(last_found) as last_found"
         "FROM " + settings.CRAWLER_DATABASE_TABLE + " WHERE app_name=?", app_name)
     entry = cursor.fetchall()
     return entry
