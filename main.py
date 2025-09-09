@@ -19,11 +19,6 @@ logging.basicConfig(level=settings.LOGLEVEL)
 
 app = Flask(__name__)
 
-# users that can access the webservice
-USERS = {
-    "admin": "admin"
-}
-
 ###
 ### Swagger configuration
 ###
@@ -39,37 +34,9 @@ SWAGGER_TEMPLATE = {
 }
 swagger = Swagger(app, template=SWAGGER_TEMPLATE)
 
-
 ################################### FUNCTIONS
-def check_basic_auth(auth_header):
-    if not auth_header:
-        return False
-    try:
-        # Erwartet: "Basic base64(username:password)"
-        if not auth_header.startswith("Basic "):
-            return False
-        b64 = auth_header.split(" ", 1)[1]
-        decoded = base64.b64decode(b64).decode("utf-8")
-        username, password = decoded.split(":", 1)
-        # Validierung
-        return USERS.get(username) == password
-    except Exception:
-        return False
-
-def require_auth(f):
-    from functools import wraps
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        auth = request.headers.get("Authorization", "")
-        if not check_basic_auth(auth):
-            abort(401)
-        return f(*args, **kwargs)
-    return wrapper
-
-
 # Route: GET /modules -> get all modules in path of crawler
 @app.route('/modules/list', methods=['GET'])
-# @require_auth
 @swag_from({
     "tags": ["Modules"],
     "responses": {
