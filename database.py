@@ -86,9 +86,10 @@ def get_software_all_names():
     cursor = connection.cursor()
     cursor.execute(
         "SELECT DISTINCT app_name FROM " + settings.CRAWLER_DATABASE_TABLE )
-    entry = cursor.fetchall()
-    LOGGER.info("Fetched all software names: %s", entry)
-    return entry
+    entries = cursor.fetchall()
+    LOGGER.info("Fetched all software names: %s", entries)
+    return entries
+
 
 def get_software_latest(app_name):
     """
