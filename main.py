@@ -1,6 +1,7 @@
 import base64
 import csv # import for writing/exporting csv files
 from sys import setprofile
+from pathlib import Path # import for changing file extension
 import crawler # import for using crawler functions
 import logging  # import lib for LOGGING
 import database # import for saving data to sqlite db
