@@ -214,6 +214,7 @@ def export_app(module):
     return jsonify("Export saved to: " + export_directory + "/" + export_file)
 
 def check_export_directory(dir=settings.CRAWLER_SERVICE_EXPORT_DIRECTORY):
+def check_export_directory(dir=settings.CRAWLER_SERVICE_EXPORT_DIRECTORY, error_message=None):
     """
     Check if export directory exists, if not create it.
     Return TRUE if it exists or it coul dbe created successfully. Otherwise return FALSE.
