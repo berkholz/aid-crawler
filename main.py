@@ -251,8 +251,6 @@ def write_data(data, filepath):
     "tags": ["Crawling"],
     "responses": {
         "200": {"description": "Ok"},
-        "401": {"description": "Unauthorized"},
-        "404": {"description": "Not Found"},
     }
 })
 def crawl_modules():
@@ -275,7 +273,6 @@ def crawl_modules():
     ],
     "responses": {
         "200": {"description": "Ok"},
-        "401": {"description": "Unauthorized"},
         "404": {"description": "Not Found"},
     }
 })
