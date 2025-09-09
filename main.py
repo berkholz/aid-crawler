@@ -1,17 +1,20 @@
-import base64
 import csv # import for writing/exporting csv files
-from sys import setprofile
 from pathlib import Path # import for changing file extension
-import crawler # import for using crawler functions
+import codecs  # import for exporting JSON to file with codec
+import csv  # import for writing/exporting csv files
+import json
 import logging  # import lib for LOGGING
-import database # import for saving data to sqlite db
+import os  # import for creating export directory
+from pathlib import Path  # import for changing file extension
+
+from flasgger import Swagger, swag_from  # import for generating swagger UI for REST API documentation
+from flask import Flask, jsonify, abort  # import for rest service
+
+import crawler  # import for using crawler functions
+import database  # import for saving data to sqlite db
 import settings  # import global settings
-from flask import Flask, jsonify, request, abort  # import for rest service
-from flasgger import Swagger, swag_from # import for generating swagger UI for REST API documentation
-import json, codecs # import for exporting JSON to file with codec
 from crawler import check_module_exists, get_application
-from settings import CWD_DIR # import global settings
-import os # import for creating export directory
+from settings import CWD_DIR  # import global settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
