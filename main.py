@@ -173,8 +173,6 @@ def list_app(module, mode="single"):
         abort(404, "Application not found")
     return a1[0]
 
-
-
 @app.route('/apps/export', methods=['GET'])
 @swag_from({
     "tags": ["Applications"],
