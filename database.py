@@ -79,6 +79,9 @@ def append_software(list_software_dict):
     connection.close()
 
 def get_software_all_names():
+    """
+    returns a list of software names available in the database
+    """
     connection = sqlite3.connect(settings.CRAWLER_DATABASE_FILE)
     cursor = connection.cursor()
     cursor.execute(
