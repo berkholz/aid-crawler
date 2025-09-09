@@ -199,8 +199,7 @@ def export_apps():
     ],
     "responses": {
         "200": {"description": "Ok"},
-        "401": {"description": "Unauthorized"},
-        "404": {"description": "Not Found"},
+        "500": {"description": "Internal Server Error"},
     }
 })
 def export_app(module):
