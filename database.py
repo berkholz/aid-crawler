@@ -90,6 +90,29 @@ def get_software_all_names():
     LOGGER.info("Fetched all software names: %s", entries)
     return entries
 
+def get_table_header(table_name):
+    """
+    returns a list of column names from a table available in the database
+    """
+    connection = sqlite3.connect(settings.CRAWLER_DATABASE_FILE)
+    cursor = connection.cursor()
+    cursor.execute(
+        f"PRAGMA table_info({settings.CRAWLER_DATABASE_TABLE});"
+    )
+    columns = [info[1] for info in cursor.fetchall()]
+    cursor.close()
+    return columns
+
+def get_software_all_latest_as_list():
+    result = []
+    result.append(get_table_header(settings.CRAWLER_DATABASE_TABLE))
+    connection = sqlite3.connect(settings.CRAWLER_DATABASE_FILE)
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT * FROM {settings.CRAWLER_DATABASE_TABLE};")
+    for row in cursor:
+        result.append(row)
+    cursor.close()
+    return result
 
 def get_software_latest(app_name):
     """
