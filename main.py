@@ -193,19 +193,18 @@ def export_apps():
     return jsonify("Export saved to: " + export_directory + "/" + export_file)
 
 @app.route('/apps/export/<string:module>', methods=['GET'])
+@app.route('/apps/export.csv', methods=['GET'])
+
 @swag_from({
     "tags": ["Applications"],
-    "parameters": [
-        {"name": "module", "in": "path", "required": True, "type": "string"}
-    ],
     "responses": {
         "200": {"description": "Ok"},
         "500": {"description": "Internal Server Error"},
     }
 })
-def export_app(module):
+def export_apps_as_csv():
     """
-    Export all crawled informations of a single application given by parameter to file. File is set in settings.CRAWLER_MODULE_EXPORT_FILE.
+    Export all crawled informations of all application to file. File is set in settings.CRAWLER_MODULE_EXPORT_DIRECTORY.
     """
     export_directory = settings.CRAWLER_SERVICE_EXPORT_DIRECTORY
     LOGGER.debug("Export directory: %s", export_directory)
