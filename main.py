@@ -394,6 +394,21 @@ def bad_request(error):
     """
     return jsonify({"error": "Bad request."}), 400
 
+@app.route('/test/<string:module>', methods=['GET'])
+@swag_from({
+    "tags": ["Applications"],
+    "parameters": [
+        {"name": "module", "in": "path", "required": True, "type": "string"}
+    ],
+    "responses": {
+        "200": {"description": "Ok"},
+        "404": {"description": "Application Not Found"},
+        "500": {"description": "Internal Server Error"},
+    }
+})
+def test(module):
+    return database.get_software_latest((module,))
+
 ################################### MAIN
 if __name__ == '__main__':
     LOGGER.info("Starting crawler on port %s...",settings.CRAWLER_SERVICE_PORT)
