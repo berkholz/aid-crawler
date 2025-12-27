@@ -348,7 +348,7 @@ def settings_list():
     List all settings of aid-cralwer that are active.
     """
     setting_list = dict()
-    setting_list["CRAWLER_MODULE_PATH"] = CWD_DIR + "/" + settings.CRAWLER_MODULE_PATH
+    setting_list["CRAWLER_MODULE_PATH"] = settings.CWD_DIR + "/" + settings.CRAWLER_MODULE_PATH
     setting_list["CRAWLER_MODULE_BLACKLIST"] = settings.CRAWLER_MODULE_BLACKLIST
     setting_list["CRAWLER_MODULE_WHITELIST"] = settings.CRAWLER_MODULE_WHITELIST
     setting_list["CRAWLER_SERVICE_LISTEN_ADDRESS"] = settings.CRAWLER_SERVICE_LISTEN_ADDRESS
