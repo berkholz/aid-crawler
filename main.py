@@ -343,7 +343,7 @@ def crawl_module(module):
         "200": {"description": "Ok"},
     }
 })
-def list_settings():
+def settings_list():
     """
     List all settings of aid-cralwer that are active.
     """
