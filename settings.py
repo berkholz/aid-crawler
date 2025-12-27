@@ -5,7 +5,7 @@ import os
 ### basic settings
 ###
 LOGLEVEL = logging.INFO
-CWD_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CWD_DIR = os.getcwd()
 CRAWLER_MODULE_REQUEST_TIMEOUT = 30
 CRAWLER_MODULE_PATH = "modules"
 
