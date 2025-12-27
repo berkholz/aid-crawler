@@ -105,7 +105,8 @@ def get_software_all_latest_as_list():
     result.append(get_table_header(settings.CRAWLER_DATABASE_TABLE))
     connection = sqlite3.connect(settings.CRAWLER_DATABASE_FILE)
     cursor = connection.cursor()
-    cursor.execute(f"SELECT * FROM {settings.CRAWLER_DATABASE_TABLE};")
+    cursor.execute(f"SELECT * FROM {settings.CRAWLER_DATABASE_TABLE} WHERE DATE(last_found) = (SELECT MAX(DATE(last_found)) FROM {settings.CRAWLER_DATABASE_TABLE});")
+
     for row in cursor:
         result.append(row)
     cursor.close()
@@ -120,9 +121,8 @@ def get_software_latest(app_name):
     cursor = connection.cursor()
     # the order of selected fields is important, because the main.py creates it dictionary in this order of values
     cursor.execute(
-        "SELECT "
-        "app_name, app_version,app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, max(last_found) as last_found "
-        "FROM " + settings.CRAWLER_DATABASE_TABLE + " WHERE app_name=?", app_name)
+        f"SELECT app_name, app_version,app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found FROM {settings.CRAWLER_DATABASE_TABLE} WHERE app_name=? AND DATE(last_found) = (SELECT MAX(DATE(last_found)) FROM {settings.CRAWLER_DATABASE_TABLE});",
+        app_name)
     entry = cursor.fetchall()
     return entry
 
