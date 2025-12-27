@@ -1,11 +1,10 @@
-import csv # import for writing/exporting csv files
-from pathlib import Path # import for changing file extension
 import codecs  # import for exporting JSON to file with codec
 import csv  # import for writing/exporting csv files
 import json
 import logging  # import lib for LOGGING
 import os  # import for creating export directory
 from pathlib import Path  # import for changing file extension
+from urllib import request
 
 from flasgger import Swagger, swag_from  # import for generating swagger UI for REST API documentation
 from flask import Flask, jsonify, abort  # import for rest service
@@ -14,7 +13,6 @@ import crawler  # import for using crawler functions
 import database  # import for saving data to sqlite db
 import settings  # import global settings
 from crawler import check_module_exists, get_application
-from settings import CWD_DIR  # import global settings
 
 ################################### VARIABLES
 LOGGER = logging.getLogger(__name__)
@@ -360,6 +358,34 @@ def list_settings():
     setting_list["CWD_DIR"] = settings.CWD_DIR
     setting_list["LOGLEVEL"] = settings.LOGLEVEL
     return jsonify(setting_list)
+
+@app.route('/settings/<string:option>', methods=['PUT'])
+@swag_from({
+    "tags": ["Settings"],
+    "parameters": [
+        {"name": "option", "in": "path", "required": True, "type": "string"},
+        {"in": "body", "name": "body", "required": True, "schema": {
+            "type": "object",
+            "properties": {"CRAWLER_SERVICE_PORT": {"type": "integer"}}
+        }}
+
+    ],
+    "responses": {
+        "200": {"description": "Ok"},
+        "404": {"description": "Option Not Found"}
+    }
+})
+def settings_set(option, value):
+    """
+    Set setting in global settings.
+    """
+    # if option not in items:
+    #     abort(404, description="Item not found")
+    if not request.json:
+        abort(400, description="Request body must be JSON")
+    data = request.json
+    settings.CRAWLER_SERVICE_PORT = data.get("value", value)
+
 
 @app.errorhandler(400)
 def bad_request(error):
