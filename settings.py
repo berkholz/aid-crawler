@@ -14,7 +14,7 @@ CRAWLER_MODULE_PATH = "modules"
 ### Settings for the crawler service
 ###
 CRAWLER_SERVICE_LISTEN_ADDRESS='0.0.0.0'
-CRAWLER_SERVICE_PORT=5000
+CRAWLER_SERVICE_PORT=55000
 
 ###
 ### settings for crawler exports
