@@ -27,7 +27,7 @@ def init_db():
         "app_version"	TEXT NOT NULL,
         "app_platform"	TEXT NOT NULL,
         "full_name"	TEXT NOT NULL,
-        "download" INTEGER DEFAULT 0,
+        "download" BOOLEAN DEFAULT FALSE,
         "url_bin"	TEXT NOT NULL,
         "hash_type"	TEXT,
         "hash_res"	TEXT,
@@ -35,8 +35,6 @@ def init_db():
         "sig_res"	TEXT,
         "url_pub_key"	TEXT,
         "last_found"	TEXT NOT NULL,
-        "last_download"	TEXT,
-        "verified_version"	TEXT,
         PRIMARY KEY("app_name","app_version","app_platform")
         );
     """)
@@ -55,8 +53,7 @@ def append_software(list_software_dict):
         app_version = software['app_version']
         full_name = software['full_name']
         last_found = software['last_found']
-        last_download = software['last_download']
-        LOGGER.debug("Actual software: %s %s %s %s %s", app_name, app_version, full_name, last_found, last_download)
+        LOGGER.debug("Actual software: %s %s %s %s", app_name, app_version, full_name, last_found)
 
         for download in software['downloads']:
             cursor.execute(
@@ -72,7 +69,7 @@ def append_software(list_software_dict):
                 cursor.execute(update_query)
             else:
                 LOGGER.info("Inserting App %s  in version %s.", app_name, app_version)
-                insert_query = f"INSERT INTO {settings.CRAWLER_DATABASE_TABLE} (app_name, app_version, app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found, last_download, verified_version) VALUES ('{app_name}', '{app_version}', '{download['app_platform']}', '{full_name}', '{download['url_bin']}', '{download['hash_type']}', '{download['hash_res']}', '{download['sig_type']}', '{download['sig_res']}', '{download['url_pub_key']}', '{last_found}', '{last_download}', 'None')"
+                insert_query = f"INSERT INTO {settings.CRAWLER_DATABASE_TABLE} (app_name, app_version, app_platform, full_name, url_bin, hash_type, hash_res, sig_type, sig_res, url_pub_key, last_found) VALUES ('{app_name}', '{app_version}', '{download['app_platform']}', '{full_name}', '{download['url_bin']}', '{download['hash_type']}', '{download['hash_res']}', '{download['sig_type']}', '{download['sig_res']}', '{download['url_pub_key']}', '{last_found}')"
                 LOGGER.debug("SQL execute: %s", insert_query)
                 cursor.execute(insert_query)
             connection.commit()
