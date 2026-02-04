@@ -8,6 +8,7 @@ participant Module
 end box
 
 participant Internet
+participant Database
 
 Crawler -> Module_Dir : scan files in modules directory for software download modules
 Module_Dir -> Crawler : return list of all python files not beginning with _
@@ -15,12 +16,22 @@ Crawler -> Crawler : filter modules with white- and blacklists
 
 loop iterate over all non filtered module files and call the run() method
   Crawler -> Module: execute function run() in module
-  Module -> Internet : GET download website
+  Module -> Internet : GET website
   Internet -> Module : download website (HTML)
   Module -> Module : extract software version from HTML
   Module -> Module : extract download URL from HTML for software and its architectures
   Module -> Module : extract download URL from HTML for verification hashes and signatures
-  Module -> Module : generate JSON with all software download URLs with architectures
+  Module -> Module : generate JSON with all download URLs with architectures for this software
+  Module -> Database: Get informations from database for software with crawled version
+  Database -> Module: entry from database
+  Module -> Module: Check if software with version is allready in database
+
+  alt software with version found
+    Module -> Database: Update last_found
+  else software with version not found
+    Module -> Database: Insert software with version
+  end
+
   Module -> Crawler : return JSON
   Crawler -> Crawler : add JSON from module to result list of all active modules
 end
